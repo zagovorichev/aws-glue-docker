@@ -1,0 +1,61 @@
+FROM ubuntu:18.04
+
+# Dependencies needed for packages downstream
+RUN apt-get update && apt-get install -y python3.6 wget python3-pip openjdk-8-jdk git && \
+	rm -rf /var/lib/apt/lists/*
+
+WORKDIR /root/lib
+RUN pwd
+RUN ls
+RUN chmod 0777 /tmp/
+
+# Java
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+# Apache Maven
+WORKDIR src/
+RUN wget https://aws-glue-etl-artifacts.s3.amazonaws.com/glue-common/apache-maven-3.6.0-bin.tar.gz
+RUN tar xvf ./apache-maven-3.6.0-bin.tar.gz -C /root/lib/
+## add to path
+ENV PATH="/root/lib/apache-maven-3.6.0/bin:$PATH"
+
+# Apache Spark
+WORKDIR src/
+RUN wget https://aws-glue-etl-artifacts.s3.amazonaws.com/glue-1.0/spark-2.4.3-bin-hadoop2.8.tgz
+RUN tar xvf ./spark-2.4.3-bin-hadoop2.8.tgz -C /root/lib/
+## add to path
+ENV SPARK_HOME="/root/lib/spark-2.4.3-bin-hadoop2.8"
+
+# DEBUG
+ARG CACHEBUST=1 
+RUN printenv
+
+# AWS Glue libraries
+WORKDIR /root/lib
+RUN git clone https://github.com/awslabs/aws-glue-libs.git
+WORKDIR /root/lib/aws-glue-libs
+RUN git checkout glue-1.0
+
+# make PyGlue.zip and download additional jar for using with maven
+RUN chmod +x /root/lib/aws-glue-libs/bin/glue-setup.sh
+RUN /root/lib/aws-glue-libs/bin/glue-setup.sh
+
+# DEBUG
+#ARG CACHEBUST=1
+#RUN ls /root/lib/aws-glue-libs
+#RUN ls /root/lib/aws-glue-libs/jarsv1
+
+# Since we will be modifying the jars manually we have to prevent Maven from overwriting our work. We need to comment out the Maven update line just in case we run glue-setup.sh again.
+RUN sed -i 's/mvn -f \$ROOT_DIR\/pom\.xml/# mvn -f \$ROOT_DIR\/pom\.xml/g' /root/lib/aws-glue-libs/bin/glue-setup.sh
+
+# DEBUG
+# RUN cat /root/lib/aws-glue-libs/bin/glue-setup.sh
+
+# fix https://github.com/awslabs/aws-glue-libs/issues/25
+# didn't work and don't need it RUN rm /root/lib/aws-glue-libs/jarsv1/netty-all-4.0.23.Final.jar
+RUN cp /root/lib/spark-2.4.3-bin-spark-2.4.3-bin-hadoop2.8/jars/netty-all-4.1.17.Final.jar /root/lib/aws-glue-libs/jarsv1/
+
+# Set environment variables
+# The AWS provided scripts that launch Glue have limitations, but under the hood they basically run Spark after setting up particular environment variables. We need to set those manually to run Spark like Glue in our own way. 
+ENV SPARK_CONF_DIR=/root/lib/aws-glue-libs/conf
+ENV PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}python/lib/py4j-0.10.7-src.zip:/root/lib/aws-glue-libs/PyGlue.zip:${PYTHONPATH}"

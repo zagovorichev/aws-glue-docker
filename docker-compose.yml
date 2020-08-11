@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  aws-glue-container:
+    container_name: aws-glue-container
+    tty: true
+    build:
+      context: ./docker/build
+    networks:
+      - aws-glue-network
+    volumes:
+      - ./lib:/root/lib:cached
+      - ./bin:/root/bin:cached
+      - ./script:/root/script:cached
+
+networks:
+  aws-glue-network:
+    driver: bridge
