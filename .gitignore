@@ -1,4 +1,4 @@
 /script/output/*
-/lib/*
+/lib/*.*
 .idea
 .DS_Store

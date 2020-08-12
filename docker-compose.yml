@@ -12,6 +12,7 @@ services:
       - ./lib:/root/lib:cached
       - ./bin:/root/bin:cached
       - ./script:/root/script:cached
+    working_dir: /root/
 
 networks:
   aws-glue-network:
