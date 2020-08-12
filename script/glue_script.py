@@ -9,9 +9,10 @@ import sys
 from pyspark.context import SparkContext
 import datetime
 
+# we don't need it with pycharm
 # sys.path.append("pydevd-pycharm.egg")
-#import pydevd_pycharm
-#pydevd_pycharm.settrace('127.0.0.1', port=12345, stdoutToServer=True, stderrToServer=True)
+# import pydevd_pycharm
+# pydevd_pycharm.settrace('aws-glue-network', port=12345, stdoutToServer=True, stderrToServer=True)
 
 NOW_STR = datetime.datetime.now().strftime('%Y-%M-%d__%H_%M_%S_')
 
