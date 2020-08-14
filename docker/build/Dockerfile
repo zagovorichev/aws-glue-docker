@@ -17,6 +17,10 @@ ENV PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.7-src.zi
 ENV PATH="/root/lib/aws-glue-libs/bin:$PATH"
 ENV AWS_REGION=eu-west-1
 ENV AWS_DEFAULT_REGION=eu-west-1
+ENV AWS_ACCESS_KEY_ID=test
+ENV AWS_ACCESS_KEY=test
+ENV AWS_SECRET_KEY=test
+ENV AWS_SECRET_ACCESS_KEY=test
 
 # Apache Maven
 WORKDIR /root/src/

@@ -4,6 +4,13 @@ services:
   aws-glue-container:
     container_name: aws-glue-container
     tty: true
+    environment:
+      - AWS_REGION=eu-west-1
+      - AWS_DEFAULT_REGION=eu-west-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_ACCESS_KEY=test
+      - AWS_SECRET_KEY=test
+      - AWS_SECRET_ACCESS_KEY=test
     build:
       context: ./docker/build
     networks:
