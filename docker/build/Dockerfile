@@ -5,6 +5,10 @@ RUN apt-get update && apt-get install -y python3.6 wget python3-pip openjdk-8-jd
 	rm -rf /var/lib/apt/lists/*
 
 RUN chmod 0777 /tmp/
+# seems that some libraries use it hardcoded
+RUN ln -s /usr/bin/python3 /usr/bin/python
+# to rename files
+RUN pip3 install boto3
 
 # Java
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64

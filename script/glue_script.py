@@ -46,7 +46,6 @@ df = spark.read.format("com.databricks.spark.csv") \
     .csv(SOURCE_ROOT)
 
 df.printSchema()
-
 df.write \
     .parquet(s3_output_path)
 
